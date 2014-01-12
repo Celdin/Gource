@@ -45,7 +45,7 @@ bool GitRawCommitLog::parseCommit(RCommit& commit) {
 
     //commit
     if(!git_raw_commit.match(line, &entries)) return false;
-    Logger.message(LOG_LEVEL_CONSOLE,entries[0]);
+    printf("%s\n",entries[0].c_str());
 
     //RecupFile.recupWithComitName(entries[0]);
 

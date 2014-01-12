@@ -64,7 +64,6 @@ int main(int argc, char *argv[]) {
         }
         //set log level
         Logger::getDefault()->setLevel(gGourceSettings.log_level);
-        printf("hello\n");
 
 #ifdef _WIN32
         // hide console if not needed
@@ -180,7 +179,6 @@ int main(int argc, char *argv[]) {
     try {
         gourcesh = gGourceShell = new GourceShell(&conf, exporter);
         gourcesh->run();
-	printf("go");
 
     } catch(ResourceException& exception) {
 

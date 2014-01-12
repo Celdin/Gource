@@ -51,6 +51,7 @@ std::string GitCommitLog::logCommand() {
 }
 
 GitCommitLog::GitCommitLog(const std::string& logfile) : RCommitLog(logfile, 'u') {
+    printf("test\n");
 
     log_command = logCommand();
 
@@ -139,7 +140,7 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
     commit.username = "";
 
     while(logf->getNextLine(line) && line.size()) {
-
+        printf("%s\n",line.c_str());
         if(line.find("user:") == 0) {
 
             //username follows user prefix
