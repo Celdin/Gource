@@ -16,6 +16,8 @@
 */
 
 #include "git.h"
+#include <iostream>
+#include <fstream>
 #include "../gource_settings.h"
 
 // parse git log entries
@@ -27,10 +29,12 @@
 
 std::string GitCommitLog::logCommand() {
 
+
     std::string log_command = "git log "
     "--pretty=format:user:%aN%n%ct "
     "--reverse --raw --encoding=UTF-8 "
-    "--no-renames";
+    "--no-renames "
+    "--no-abbrev";
 
     if(!gGourceSettings.git_branch.empty()) {
         log_command += " ";
@@ -136,11 +140,11 @@ BaseLog* GitCommitLog::generateLog(const std::string& dir) {
 bool GitCommitLog::parseCommit(RCommit& commit) {
 
     std::string line;
-
+    std::string fileName;
     commit.username = "";
 
     while(logf->getNextLine(line) && line.size()) {
-        printf("%s\n",line.c_str());
+
         if(line.find("user:") == 0) {
 
             //username follows user prefix
@@ -163,9 +167,52 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
 
         //incorrect log format
         if(tab == std::string::npos || tab == 0 || tab == line.size()-1) continue;
-
+        std::string maLigne = line;
+        maLigne = maLigne.substr(maLigne.find(" ")+1,maLigne.size());
+        maLigne = maLigne.substr(maLigne.find(" ")+1,maLigne.size());
+        std::string firstCommit = maLigne.substr(0,maLigne.find(" "));
+        maLigne = maLigne.substr(maLigne.find(" ")+1,maLigne.size());
+        std::string secondCommit = maLigne.substr(0,maLigne.find(" "));
         std::string status = line.substr(tab - 1, 1);
         std::string file   = line.substr(tab + 1);
+
+        if(file.find(".java")!=std::string::npos){
+            char maCommande[1024];
+            if(firstCommit != "0000000000000000000000000000000000000000" && secondCommit != "0000000000000000000000000000000000000000"){
+                sprintf(maCommande,"git diff --unified=3000 %s %s>/tmp/gource/%s_diff.txt\n",firstCommit.c_str(),secondCommit.c_str(),file.substr(file.find_last_of("/"),file.find_last_of(".")-1).c_str());
+                system(maCommande);
+                fileName="/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_diff.txt";
+                std::ifstream fichier(fileName, std::ios::in);
+                std::ofstream avant("/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_avant.txt",std::ios::out | std::ios::trunc);
+                std::ofstream apres("/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_apres.txt",std::ios::out |  std::ios::trunc);
+
+
+                std::string ligne;
+                getline(fichier, ligne);
+                getline(fichier, ligne);
+                getline(fichier, ligne);
+                getline(fichier, ligne);
+                while(getline(fichier, ligne))  // tant que l'on peut mettre la ligne dans "contenu"
+                {
+                    if((ligne.c_str())[0] == '@' && (ligne.c_str())[1] == '@'){
+                        apres<<ligne.substr(ligne.substr(2,ligne.size()).find("@@")+4,ligne.size())+"\n";
+                        avant<<ligne.substr(ligne.substr(2,ligne.size()).find("@@")+4,ligne.size())+"\n";
+                    }else if((ligne.c_str())[0]=='+'){
+                        apres<<" "+ligne.substr(1,line.length())+"\n";
+                    }else if((ligne.c_str())[0]=='-'){
+                        avant<<" "+ligne.substr(1,line.length())+"\n";
+                    }else{
+                        apres<<ligne+"\n";
+                        avant<<ligne+"\n";
+
+                    }
+                }
+
+                fichier.close();
+                avant.close();
+                apres.close();
+            }
+        }
 
         if(file.empty()) continue;
 
