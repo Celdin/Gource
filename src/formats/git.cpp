@@ -190,6 +190,7 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
                 bool supretion = false;
                 RecupFile rf = RecupFile();
                 std::string ligne;
+                std::string nomMethode;
                 getline(fichier, ligne);
                 getline(fichier, ligne);
                 getline(fichier, ligne);
@@ -197,29 +198,33 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
                 while(getline(fichier, ligne))  // tant que l'on peut mettre la ligne dans "contenu"
                 {
                     if(rf.estUneMethode(ligne.substr(1,ligne.size()))){
+                        nomMethode = ligne.substr(1,ligne.find("(")-1);
+                        do{
+                            nomMethode = nomMethode.substr(nomMethode.find(" ")+1,nomMethode.size());
+                           }while(nomMethode.find(" ") != std::string::npos);
                         if(ajout && supretion){
                             //check for and remove double quotes
                             if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                 if(file.size()<=2) continue;
-                                commit.addFile(file.substr(1,file.size()-2), "M");
+                                commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) +  file.substr(1,file.size()-2).substr(file.find_last_of("/"),0), "M");
                             }else{
-                                commit.addFile(file, "M");
+                                commit.addFile(file.substr(0,file.find_last_of(".")) + file.substr(file.find_last_of("/"),file.size()), "M");
                             }
                         }else if (ajout){
                             //check for and remove double quotes
                             if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                 if(file.size()<=2) continue;
-                                commit.addFile(file.substr(1,file.size()-2), "A");
+                                commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) +  file.substr(1,file.size()-2).substr(file.find_last_of("/"),0), "A");
                             }else{
-                                commit.addFile(file, "A");
+                                commit.addFile(file.substr(0,file.find_last_of(".")) + file.substr(file.find_last_of("/"),file.size()), "A");
                             }
                         }else if(supretion){
                             //check for and remove double quotes
                             if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                 if(file.size()<=2) continue;
-                                commit.addFile(file.substr(1,file.size()-2), "D");
+                                commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) +  file.substr(1,file.size()-2).substr(file.find_last_of("/"),0), "D");
                             }else{
-                                commit.addFile(file, "D");
+                                commit.addFile(file.substr(0,file.find_last_of(".")) + file.substr(file.find_last_of("/"),file.size()), "D");
                             }
                         }
                         newMethode=true;
@@ -234,25 +239,25 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
                                 //check for and remove double quotes
                                 if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                     if(file.size()<=2) continue;
-                                    commit.addFile(file.substr(1,file.size()-2), "M");
+                                    commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) + "/" + nomMethode, "M");
                                 }else{
-                                    commit.addFile(file, "M");
+                                    commit.addFile(file.substr(0,file.find_last_of(".")) + "/" + nomMethode, "M");
                                 }
                             }else if (ajout){
                                 //check for and remove double quotes
                                 if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                     if(file.size()<=2) continue;
-                                    commit.addFile(file.substr(1,file.size()-2), "A");
+                                    commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of("."))  + "/" + nomMethode, "A");
                                 }else{
-                                    commit.addFile(file, "A");
+                                    commit.addFile(file.substr(0,file.find_last_of(".")) +  "/" + nomMethode, "A");
                                 }
                             }else if(supretion){
                                 //check for and remove double quotes
                                 if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                                     if(file.size()<=2) continue;
-                                    commit.addFile(file.substr(1,file.size()-2), "D");
+                                    commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) + "/" + nomMethode, "D");
                                 }else{
-                                    commit.addFile(file, "D");
+                                    commit.addFile(file.substr(0,file.find_last_of(".")) + "/" + nomMethode, "D");
                                 }
                             }
                             newMethode=false;
@@ -273,9 +278,9 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
                 //check for and remove double quotes
                 if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
                     if(file.size()<=2) continue;
-                    commit.addFile(file.substr(1,file.size()-2), status);
+                    commit.addFile(file.substr(1,file.size()-2).substr(0,file.find_last_of(".")) +  file.substr(1,file.size()-2).substr(file.find_last_of("/"),0), status);
                 }else{
-                    commit.addFile(file, status);
+                    commit.addFile(file.substr(0,file.find_last_of(".")) + file.substr(file.find_last_of("/"),file.size()), status);
                 }
             }
         }
