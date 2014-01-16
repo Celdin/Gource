@@ -18,6 +18,7 @@
 #include "git.h"
 #include <iostream>
 #include <fstream>
+#include "recup-file.h"
 #include "../gource_settings.h"
 
 // parse git log entries
@@ -179,14 +180,15 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
         if(file.find(".java")!=std::string::npos){
             char maCommande[1024];
             if(firstCommit != "0000000000000000000000000000000000000000" && secondCommit != "0000000000000000000000000000000000000000"){
-                sprintf(maCommande,"git diff --unified=3000 %s %s>/tmp/gource/%s_diff.txt\n",firstCommit.c_str(),secondCommit.c_str(),file.substr(file.find_last_of("/"),file.find_last_of(".")-1).c_str());
+                sprintf(maCommande,"git diff --unified=3000 %s %s>/tmp/_diff.txt\n",firstCommit.c_str(),secondCommit.c_str());
                 system(maCommande);
-                fileName="/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_diff.txt";
+                fileName="/tmp/_diff.txt";
                 std::ifstream fichier(fileName, std::ios::in);
-                std::ofstream avant("/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_avant.txt",std::ios::out | std::ios::trunc);
-                std::ofstream apres("/tmp/gource/" + file.substr(file.find_last_of("/"),file.find_last_of(".")-1) + "_apres.txt",std::ios::out |  std::ios::trunc);
 
-
+                bool newMethode = false;
+                bool ajout = false;
+                bool supretion = false;
+                RecupFile rf = RecupFile();
                 std::string ligne;
                 getline(fichier, ligne);
                 getline(fichier, ligne);
@@ -194,23 +196,87 @@ bool GitCommitLog::parseCommit(RCommit& commit) {
                 getline(fichier, ligne);
                 while(getline(fichier, ligne))  // tant que l'on peut mettre la ligne dans "contenu"
                 {
-                    if((ligne.c_str())[0] == '@' && (ligne.c_str())[1] == '@'){
-                        apres<<ligne.substr(ligne.substr(2,ligne.size()).find("@@")+4,ligne.size())+"\n";
-                        avant<<ligne.substr(ligne.substr(2,ligne.size()).find("@@")+4,ligne.size())+"\n";
-                    }else if((ligne.c_str())[0]=='+'){
-                        apres<<" "+ligne.substr(1,line.length())+"\n";
+                    if(rf.estUneMethode(ligne.substr(1,ligne.size()))){
+                        if(ajout && supretion){
+                            //check for and remove double quotes
+                            if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                if(file.size()<=2) continue;
+                                commit.addFile(file.substr(1,file.size()-2), "M");
+                            }else{
+                                commit.addFile(file, "M");
+                            }
+                        }else if (ajout){
+                            //check for and remove double quotes
+                            if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                if(file.size()<=2) continue;
+                                commit.addFile(file.substr(1,file.size()-2), "A");
+                            }else{
+                                commit.addFile(file, "A");
+                            }
+                        }else if(supretion){
+                            //check for and remove double quotes
+                            if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                if(file.size()<=2) continue;
+                                commit.addFile(file.substr(1,file.size()-2), "D");
+                            }else{
+                                commit.addFile(file, "D");
+                            }
+                        }
+                        newMethode=true;
+                        ajout = false;
+                        supretion = false;
+                    }else if(ligne.find("{") != std::string::npos)
+                        rf.level++;
+                    if(ligne.find("}") != std::string::npos){
+                        if(rf.estUneFinMethode()){
+                            newMethode=false;
+                            if(ajout && supretion){
+                                //check for and remove double quotes
+                                if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                    if(file.size()<=2) continue;
+                                    commit.addFile(file.substr(1,file.size()-2), "M");
+                                }else{
+                                    commit.addFile(file, "M");
+                                }
+                            }else if (ajout){
+                                //check for and remove double quotes
+                                if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                    if(file.size()<=2) continue;
+                                    commit.addFile(file.substr(1,file.size()-2), "A");
+                                }else{
+                                    commit.addFile(file, "A");
+                                }
+                            }else if(supretion){
+                                //check for and remove double quotes
+                                if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                                    if(file.size()<=2) continue;
+                                    commit.addFile(file.substr(1,file.size()-2), "D");
+                                }else{
+                                    commit.addFile(file, "D");
+                                }
+                            }
+                            newMethode=false;
+                            ajout = false;
+                            supretion = false;
+                        }
+                        rf.level--;
+                    }
+                    if((ligne.c_str())[0]=='+'){
+                        ajout = true;
                     }else if((ligne.c_str())[0]=='-'){
-                        avant<<" "+ligne.substr(1,line.length())+"\n";
-                    }else{
-                        apres<<ligne+"\n";
-                        avant<<ligne+"\n";
-
+                        supretion = true;
                     }
                 }
 
                 fichier.close();
-                avant.close();
-                apres.close();
+            }else{
+                //check for and remove double quotes
+                if(file.find('"') == 0 && file.rfind('"') == file.size()-1) {
+                    if(file.size()<=2) continue;
+                    commit.addFile(file.substr(1,file.size()-2), status);
+                }else{
+                    commit.addFile(file, status);
+                }
             }
         }
 

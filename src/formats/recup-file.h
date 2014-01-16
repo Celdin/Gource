@@ -1,10 +1,13 @@
 #ifndef RECUP_FILE_H
 #define RECUP_FILE_H
-#include <unistd.h>
+#include <string>
 
 class RecupFile{
-public :
-    std::string recupWithComitName(std::string comitName);
-}
+public:
+    RecupFile();
+    int level;
+    bool estUneMethode(std::string line);
+    bool estUneFinMethode();
+};
 
 #endif

@@ -42,6 +42,7 @@ gource_SOURCES = \
 	src/formats/gitraw.cpp \
 	src/formats/hg.cpp \
 	src/formats/svn.cpp \
+	src/formats/recup-file.cpp \
 	src/gource.cpp \
 	src/gource_shell.cpp \
 	src/gource_settings.cpp \

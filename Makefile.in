@@ -99,12 +99,12 @@ am__gource_SOURCES_DIST = src/action.cpp src/bloom.cpp src/caption.cpp \
 	src/formats/custom.cpp src/formats/cvs-exp.cpp \
 	src/formats/cvs2cl.cpp src/formats/git.cpp \
 	src/formats/gitraw.cpp src/formats/hg.cpp src/formats/svn.cpp \
-	src/gource.cpp src/gource_shell.cpp src/gource_settings.cpp \
-	src/key.cpp src/logmill.cpp src/main.cpp src/pawn.cpp \
-	src/slider.cpp src/spline.cpp src/textbox.cpp src/user.cpp \
-	src/zoomcamera.cpp src/tinyxml/tinyxmlerror.cpp \
-	src/tinyxml/tinystr.cpp src/tinyxml/tinyxml.cpp \
-	src/tinyxml/tinyxmlparser.cpp
+	src/formats/recup-file.cpp src/gource.cpp src/gource_shell.cpp \
+	src/gource_settings.cpp src/key.cpp src/logmill.cpp \
+	src/main.cpp src/pawn.cpp src/slider.cpp src/spline.cpp \
+	src/textbox.cpp src/user.cpp src/zoomcamera.cpp \
+	src/tinyxml/tinyxmlerror.cpp src/tinyxml/tinystr.cpp \
+	src/tinyxml/tinyxml.cpp src/tinyxml/tinyxmlparser.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 @USE_BUNDLED_TINYXML_TRUE@am__objects_1 = src/tinyxml/gource-tinyxmlerror.$(OBJEXT) \
 @USE_BUNDLED_TINYXML_TRUE@	src/tinyxml/gource-tinystr.$(OBJEXT) \
@@ -142,8 +142,9 @@ am_gource_OBJECTS = src/gource-action.$(OBJEXT) \
 	src/formats/gource-git.$(OBJEXT) \
 	src/formats/gource-gitraw.$(OBJEXT) \
 	src/formats/gource-hg.$(OBJEXT) \
-	src/formats/gource-svn.$(OBJEXT) src/gource-gource.$(OBJEXT) \
-	src/gource-gource_shell.$(OBJEXT) \
+	src/formats/gource-svn.$(OBJEXT) \
+	src/formats/gource-recup-file.$(OBJEXT) \
+	src/gource-gource.$(OBJEXT) src/gource-gource_shell.$(OBJEXT) \
 	src/gource-gource_settings.$(OBJEXT) src/gource-key.$(OBJEXT) \
 	src/gource-logmill.$(OBJEXT) src/gource-main.$(OBJEXT) \
 	src/gource-pawn.$(OBJEXT) src/gource-slider.$(OBJEXT) \
@@ -357,10 +358,11 @@ gource_SOURCES = src/action.cpp src/bloom.cpp src/caption.cpp \
 	src/formats/custom.cpp src/formats/cvs-exp.cpp \
 	src/formats/cvs2cl.cpp src/formats/git.cpp \
 	src/formats/gitraw.cpp src/formats/hg.cpp src/formats/svn.cpp \
-	src/gource.cpp src/gource_shell.cpp src/gource_settings.cpp \
-	src/key.cpp src/logmill.cpp src/main.cpp src/pawn.cpp \
-	src/slider.cpp src/spline.cpp src/textbox.cpp src/user.cpp \
-	src/zoomcamera.cpp $(am__append_1)
+	src/formats/recup-file.cpp src/gource.cpp src/gource_shell.cpp \
+	src/gource_settings.cpp src/key.cpp src/logmill.cpp \
+	src/main.cpp src/pawn.cpp src/slider.cpp src/spline.cpp \
+	src/textbox.cpp src/user.cpp src/zoomcamera.cpp \
+	$(am__append_1)
 AM_CPPFLAGS = -DSDLAPP_RESOURCE_DIR=\"$(pkgdatadir)\" $(am__append_2)
 dist_pkgdata_DATA = data/beam.png data/bloom.tga data/bloom_alpha.tga data/file.png data/user.png data/gource.style
 shadersdir = $(pkgdatadir)/shaders
@@ -537,6 +539,8 @@ src/formats/gource-hg.$(OBJEXT): src/formats/$(am__dirstamp) \
 	src/formats/$(DEPDIR)/$(am__dirstamp)
 src/formats/gource-svn.$(OBJEXT): src/formats/$(am__dirstamp) \
 	src/formats/$(DEPDIR)/$(am__dirstamp)
+src/formats/gource-recup-file.$(OBJEXT): src/formats/$(am__dirstamp) \
+	src/formats/$(DEPDIR)/$(am__dirstamp)
 src/gource-gource.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/gource-gource_shell.$(OBJEXT): src/$(am__dirstamp) \
@@ -614,6 +618,7 @@ mostlyclean-compile:
 	-rm -f src/formats/gource-git.$(OBJEXT)
 	-rm -f src/formats/gource-gitraw.$(OBJEXT)
 	-rm -f src/formats/gource-hg.$(OBJEXT)
+	-rm -f src/formats/gource-recup-file.$(OBJEXT)
 	-rm -f src/formats/gource-svn.$(OBJEXT)
 	-rm -f src/gource-action.$(OBJEXT)
 	-rm -f src/gource-bloom.$(OBJEXT)
@@ -688,6 +693,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@src/formats/$(DEPDIR)/gource-git.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/formats/$(DEPDIR)/gource-gitraw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/formats/$(DEPDIR)/gource-hg.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@src/formats/$(DEPDIR)/gource-recup-file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/formats/$(DEPDIR)/gource-svn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tinyxml/$(DEPDIR)/gource-tinystr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@src/tinyxml/$(DEPDIR)/gource-tinyxml.Po@am__quote@
@@ -1227,6 +1233,20 @@ src/formats/gource-svn.obj: src/formats/svn.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/formats/svn.cpp' object='src/formats/gource-svn.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -c -o src/formats/gource-svn.obj `if test -f 'src/formats/svn.cpp'; then $(CYGPATH_W) 'src/formats/svn.cpp'; else $(CYGPATH_W) '$(srcdir)/src/formats/svn.cpp'; fi`
+
+src/formats/gource-recup-file.o: src/formats/recup-file.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -MT src/formats/gource-recup-file.o -MD -MP -MF src/formats/$(DEPDIR)/gource-recup-file.Tpo -c -o src/formats/gource-recup-file.o `test -f 'src/formats/recup-file.cpp' || echo '$(srcdir)/'`src/formats/recup-file.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) src/formats/$(DEPDIR)/gource-recup-file.Tpo src/formats/$(DEPDIR)/gource-recup-file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/formats/recup-file.cpp' object='src/formats/gource-recup-file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -c -o src/formats/gource-recup-file.o `test -f 'src/formats/recup-file.cpp' || echo '$(srcdir)/'`src/formats/recup-file.cpp
+
+src/formats/gource-recup-file.obj: src/formats/recup-file.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -MT src/formats/gource-recup-file.obj -MD -MP -MF src/formats/$(DEPDIR)/gource-recup-file.Tpo -c -o src/formats/gource-recup-file.obj `if test -f 'src/formats/recup-file.cpp'; then $(CYGPATH_W) 'src/formats/recup-file.cpp'; else $(CYGPATH_W) '$(srcdir)/src/formats/recup-file.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) src/formats/$(DEPDIR)/gource-recup-file.Tpo src/formats/$(DEPDIR)/gource-recup-file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/formats/recup-file.cpp' object='src/formats/gource-recup-file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -c -o src/formats/gource-recup-file.obj `if test -f 'src/formats/recup-file.cpp'; then $(CYGPATH_W) 'src/formats/recup-file.cpp'; else $(CYGPATH_W) '$(srcdir)/src/formats/recup-file.cpp'; fi`
 
 src/gource-gource.o: src/gource.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gource_CXXFLAGS) $(CXXFLAGS) -MT src/gource-gource.o -MD -MP -MF src/$(DEPDIR)/gource-gource.Tpo -c -o src/gource-gource.o `test -f 'src/gource.cpp' || echo '$(srcdir)/'`src/gource.cpp

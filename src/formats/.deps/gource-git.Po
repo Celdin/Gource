@@ -275,9 +275,10 @@ src/formats/gource-git.o: src/formats/git.cpp src/formats/git.h \
  /usr/include/x86_64-linux-gnu/bits/uio.h \
  /usr/include/x86_64-linux-gnu/bits/fcntl2.h \
  src/formats/../core/display.h src/formats/../core/regex.h \
- src/formats/../core/stringhash.h src/formats/../gource_settings.h \
- src/formats/../core/texture.h src/formats/../core/settings.h \
- src/formats/../core/conffile.h src/formats/../core/regex.h
+ src/formats/../core/stringhash.h src/formats/recup-file.h \
+ src/formats/../gource_settings.h src/formats/../core/texture.h \
+ src/formats/../core/settings.h src/formats/../core/conffile.h \
+ src/formats/../core/regex.h
 
 src/formats/git.h:
 
@@ -1000,6 +1001,8 @@ src/formats/../core/display.h:
 src/formats/../core/regex.h:
 
 src/formats/../core/stringhash.h:
+
+src/formats/recup-file.h:
 
 src/formats/../gource_settings.h:
 
